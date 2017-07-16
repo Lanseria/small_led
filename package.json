@@ -1,0 +1,16 @@
+{
+  "name": "led_server_ws",
+  "version": "1.0.0",
+  "description": "lan",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "modbus-stream": "^0.34.0",
+    "socket.io": "^2.0.3"
+  }
+}

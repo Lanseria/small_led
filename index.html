@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>LED远程控制</title>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <div class="header">
+    <h3>LED远程控制<span class="label label-default">default</span></h3>
+  </div>
+  <div class="content">
+    <button class="btn btn-info btn-block" onclick="ledopen()">LED ON</button>
+    <button class="btn btn-danger btn-block" onclick="ledclose()">LED OFF</button>
+    <form>
+      <div class="form-group">
+        <label for="exampleInputFile">数值</label>
+        <input class="form-control" type="text" id="light" value="">
+        <p class="help-block">0-256的亮度</p>
+      </div>
+    </form>
+    
+    <button class="btn btn-success btn-block" onclick="ledcontrol()">调节</button>
+    <p class="pcontent">
+    </p>
+    <p class="status"></p>
+  </div>
+
+</body>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect();
+  console.log(socket);
+  console.log(socket.ids);
+  $('.status').html(socket.ids);
+  var count = $('.pcontent').html();
+  socket.on('push message',function(data){
+    $('.pcontent').text('number:  ' + data.number);
+    console.log('Got update from the server');
+    console.log('There are ' + data.number + 'users');
+  })
+  socket.on('status', function(data){
+    $('span.label').addClass("label-" + data.text);
+    $('span.label').removeClass("label-default");
+    $('span.label').text(data.text);
+  })
+  function ledopen(){
+    socket.emit('message', { text: "11" });
+    alert("灯亮!");
+  }
+  function ledclose(){
+    socket.emit('message', { text: "12" });
+    alert("灯灭!");
+  }
+  function ledcontrol(){
+    var light = $('#light').val();
+    if(light >= 0 && light <= 256){
+      light = addZero(light);
+      light = '2' + light;
+      socket.emit('message', { text: light });
+      alert("修改成功!");
+    }else{
+      alert('请填写正确的数值!');
+    }
+  }
+  function addZero(num){
+    return ('000'+num).slice(-3);
+  }
+</script>
+</html>
